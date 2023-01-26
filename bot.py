@@ -11,13 +11,16 @@ from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
 from database.ia_filterdb import Media
 from database.users_chats_db import db
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL
+from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, BASE_URL
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 from Script import script 
 from datetime import date, datetime 
 import pytz
+from subprocess import Popen
+from time import sleep
+from os import environ
 
 class Bot(Client):
 
@@ -31,6 +34,12 @@ class Bot(Client):
             plugins={"root": "plugins"},
             sleep_threshold=5,
         )
+        if BASE_URL:
+            PORT = environ.get('PORT', None)
+            Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT}", shell=True)
+            sleep(1)
+            Popen(["python3", "alive.py"])
+            sleep(0.5)
 
     async def start(self):
         b_users, b_chats = await db.get_banned()

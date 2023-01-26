@@ -1,6 +1,9 @@
 import re
 from os import environ
 from Script import script 
+from dotenv import load_dotenv
+from requests import get as rget
+from logging import info as log_info, error as log_error
 
 id_pattern = re.compile(r'^.\d+$')
 def is_enabled(value, default):
@@ -11,7 +14,35 @@ def is_enabled(value, default):
     else:
         return default
 
+CONFIG_FILE_URL = environ.get('CONFIG_FILE_URL')
+
+if CONFIG_FILE_URL:
+    try:
+        res = rget(CONFIG_FILE_URL)
+        if res.status_code == 200:
+            with open('config.env', 'wb+') as f:
+                f.write(res.content)
+            log_info("Succesfully got config.env from CONFIG_FILE_URL")
+        else:
+            log_error(f"Failed to download config.env {res.status_code}")
+    except Exception as e:
+        log_error(f"CONFIG_FILE_URL: {e}")
+
+try:
+    load_dotenv('config.env', override=True)
+except:
+    pass
+
 # Bot information
+
+try:
+    API_ID = int(environ.get('API_ID'))
+    API_HASH = environ.get('API_HASH')
+    BOT_TOKEN = environ.get('BOT_TOKEN')
+    DATABASE_URI = environ.get('DATABASE_URI')
+except:
+    log_error("One or more env variables missing! Exiting now")
+    exit(1)
 SESSION = environ.get('SESSION', 'Media_search')
 API_ID = int(environ['API_ID'])
 API_HASH = environ['API_HASH']
@@ -42,11 +73,11 @@ SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(
 NO_RESULTS_MSG = bool(environ.get("NO_RESULTS_MSG", False))
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
 
 # Others
+BASE_URL = environ.get('BASE_URL')
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
 MAX_B_TN = environ.get("MAX_B_TN", "5")
 MAX_BTN = is_enabled((environ.get('MAX_BTN', "True")), True)

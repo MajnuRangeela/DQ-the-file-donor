@@ -1,4 +1,4 @@
-pyrogram>=2.0.30
+pyrogram==2.0.66
 tgcrypto
 pymongo[srv]==3.12.3
 motor==2.5.1
@@ -9,3 +9,7 @@ bs4
 git+https://github.com/Joelkb/cinemagoer
 datetime
 pytz
+imdbpy
+python-dotenv
+flask
+gunicorn
