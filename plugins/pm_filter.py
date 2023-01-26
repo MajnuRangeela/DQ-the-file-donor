@@ -282,9 +282,11 @@ async def advantage_spoll_choker(bot, query):
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
     if not movies:
         return await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
-    if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+    # if int(user) != 0 and query.from_user.id != int(user):
+    #     return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     if movie_ == "close_spellcheck":
+        if int(user) != 0 and query.from_user.id != int(user):
+            return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
         return await query.message.delete()
     movie = movies[(int(movie_))]
     await query.answer(script.TOP_ALRT_MSG)
